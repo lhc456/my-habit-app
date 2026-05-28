@@ -6,6 +6,14 @@ export default defineConfig({
   plugins: [
     uni(),
   ],
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern-compiler',
+        silenceDeprecations: ['legacy-js-api']
+      }
+    }
+  },
   optimizeDeps: {
     exclude: ['@dcloudio/uni-mp-weixin']
   }

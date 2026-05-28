@@ -1,9 +1,9 @@
 <template>
 	<view class="container">
 		<view class="timer-mode">
-			<text class="mode-btn" :class="{ active: mode === 'timer' }" @click="mode = 'timer'">正计时</text>
-			<text class="mode-btn" :class="{ active: mode === 'countdown' }" @click="mode = 'countdown'">倒计时</text>
-			<text class="mode-btn" :class="{ active: mode === 'pomodoro' }" @click="mode = 'pomodoro'">番茄钟</text>
+			<text class="mode-btn" :class="{ active: mode === 'countdown' }" @click="switchMode('countdown')">倒计时</text>
+			<text class="mode-btn" :class="{ active: mode === 'timer' }" @click="switchMode('timer')">正计时</text>
+			<text class="mode-btn" :class="{ active: mode === 'pomodoro' }" @click="switchMode('pomodoro')">番茄钟</text>
 		</view>
 		
 		<view class="timer-display">
@@ -19,7 +19,7 @@
 			<text class="habit-name">写日记</text>
 		</view>
 		
-		<view class="start-btn" :style="{ backgroundColor: isRunning ? '#ff6b8a' : '#ff0060' }" @click="toggleTimer">
+		<view class="start-btn" :style="{ backgroundColor: isRunning ? '#ff6b8a' : '#7ec699' }" @click="toggleTimer">
 			<text>{{ isRunning ? '暂停' : '开始' }}</text>
 		</view>
 	</view>
@@ -28,9 +28,10 @@
 <script setup>
 import { ref, computed, onUnmounted } from 'vue';
 
-const mode = ref('pomodoro');
+const mode = ref('countdown');
 const isRunning = ref(false);
 const seconds = ref(25 * 60);
+const initialSeconds = ref(25 * 60);
 
 let timer = null;
 
@@ -40,29 +41,60 @@ const displayTime = computed(() => {
 	return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
 });
 
+const switchMode = (newMode) => {
+	mode.value = newMode;
+	isRunning.value = false;
+	if (timer) {
+		clearInterval(timer);
+		timer = null;
+	}
+	
+	switch(newMode) {
+		case 'countdown':
+			seconds.value = 25 * 60;
+			break;
+		case 'timer':
+			seconds.value = 0;
+			break;
+		case 'pomodoro':
+			seconds.value = 25 * 60;
+			break;
+	}
+	initialSeconds.value = seconds.value;
+};
+
 const toggleTimer = () => {
 	if (isRunning.value) {
-		clearInterval(timer);
+		if (timer) {
+			clearInterval(timer);
+			timer = null;
+		}
+		isRunning.value = false;
 	} else {
+		isRunning.value = true;
 		timer = setInterval(() => {
-			if (mode.value === 'countdown') {
+			if (mode.value === 'countdown' || mode.value === 'pomodoro') {
 				if (seconds.value > 0) {
 					seconds.value--;
 				} else {
-					clearInterval(timer);
+					if (timer) {
+						clearInterval(timer);
+						timer = null;
+					}
 					isRunning.value = false;
+					uni.showToast({ title: '时间到！', icon: 'success' });
 				}
 			} else {
 				seconds.value++;
 			}
 		}, 1000);
 	}
-	isRunning.value = !isRunning.value;
 };
 
 onUnmounted(() => {
 	if (timer) {
 		clearInterval(timer);
+		timer = null;
 	}
 });
 </script>

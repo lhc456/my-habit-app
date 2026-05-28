@@ -5,6 +5,14 @@
 			<wd-icon name="message" size="24" color="#666"></wd-icon>
 		</view>
 		
+		<ParticleEffect 
+			v-if="particleEffect.show"
+			:x="particleEffect.x"
+			:y="particleEffect.y"
+			:color="particleEffect.color"
+			@complete="particleEffect.show = false"
+		/>
+		
 		<!-- 任意时间 -->
 		<view class="time-section">
 			<view class="section-header">
@@ -19,7 +27,7 @@
 					v-for="(habit, index) in anyTimeHabits" 
 					:key="index"
 					class="habit-card"
-					@click="toggleCheck(habit)"
+					@click="toggleCheck(habit, $event)"
 				>
 					<view class="icon-circle" :style="{ backgroundColor: habit.color }">
 						<wd-icon :name="habit.icon" size="28" color="#fff"></wd-icon>
@@ -46,7 +54,7 @@
 					v-for="(habit, index) in morningHabits" 
 					:key="index"
 					class="habit-card"
-					@click="toggleCheck(habit)"
+					@click="toggleCheck(habit, $event)"
 				>
 					<view class="icon-circle" :style="{ backgroundColor: habit.color }">
 						<wd-icon :name="habit.icon" size="28" color="#fff"></wd-icon>
@@ -73,7 +81,7 @@
 					v-for="(habit, index) in dayHabits" 
 					:key="index"
 					class="habit-card"
-					@click="toggleCheck(habit)"
+					@click="toggleCheck(habit, $event)"
 				>
 					<view class="icon-circle" :style="{ backgroundColor: habit.color }">
 						<wd-icon :name="habit.icon" size="28" color="#fff"></wd-icon>
@@ -90,38 +98,61 @@
 
 <script setup>
 import { ref } from 'vue';
+import ParticleEffect from '@/components/ParticleEffect.vue';
 
-// 任意时间的习惯
+const particleEffect = ref({
+	show: false,
+	x: 0,
+	y: 0,
+	color: '#7ec699'
+});
+
 const anyTimeHabits = ref([
-	{ name: '练习新技能', icon: 'chart-bar', color: '#b5a8e6', checked: false },
-	{ name: '醒来喝水', icon: 'cup', color: '#f5a8c9', checked: false },
-	{ name: '睡前刷牙', icon: 'tooth', color: '#a8d8c9', checked: true },
-	{ name: '背单词', icon: 'book-open', color: '#d4b5f0', checked: false },
+	{ name: '练习新技能', icon: 'chart-bar', color: '#b5a8e6', checked: false, count: 0 },
+	{ name: '醒来喝水', icon: 'cup', color: '#f5a8c9', checked: false, count: 0 },
+	{ name: '睡前刷牙', icon: 'tooth', color: '#a8d8c9', checked: true, count: 1 },
+	{ name: '背单词', icon: 'book-open', color: '#d4b5f0', checked: false, count: 0 },
 ]);
 
-// 起床之后的习惯
 const morningHabits = ref([
-	{ name: '写日记', icon: 'calendar', color: '#a8d8c9', checked: false },
-	{ name: '写待办事项', icon: 'pen', color: '#f0d67d', checked: false },
-	{ name: '狗', icon: 'dog', color: '#f9e5b5', checked: false },
+	{ name: '写日记', icon: 'calendar', color: '#a8d8c9', checked: false, count: 0 },
+	{ name: '写待办事项', icon: 'pen', color: '#f0d67d', checked: false, count: 0 },
+	{ name: '狗', icon: 'dog', color: '#f9e5b5', checked: false, count: 0 },
 ]);
 
-// 晨间习惯
 const dayHabits = ref([
-	{ name: '打坐冥想', icon: 'meditation', color: '#a8d8d8', checked: false },
-	{ name: '休息一下', icon: 'chat', color: '#c9f0d4', checked: false },
-	{ name: '使用番茄钟', icon: 'tomato', color: '#d4b5f0', checked: false },
-	{ name: '浇花', icon: 'water-drop', color: '#a8d8d8', checked: false },
+	{ name: '打坐冥想', icon: 'meditation', color: '#a8d8d8', checked: false, count: 0 },
+	{ name: '休息一下', icon: 'chat', color: '#c9f0d4', checked: false, count: 0 },
+	{ name: '使用番茄钟', icon: 'tomato', color: '#d4b5f0', checked: false, count: 0 },
+	{ name: '浇花', icon: 'water-drop', color: '#a8d8d8', checked: false, count: 0 },
 ]);
 
-// 切换打卡状态
-const toggleCheck = (habit) => {
-	habit.checked = !habit.checked;
-	// 添加简单的震动反馈
-	uni.vibrateShort({
-		success: () => {},
-		fail: () => {}
-	});
+const toggleCheck = (habit, event) => {
+	if (!habit.checked) {
+		const touch = event.touches?.[0] || event.detail || {};
+		particleEffect.value = {
+			show: true,
+			x: touch.clientX || touch.pageX || window.innerWidth / 2,
+			y: touch.clientY || touch.pageY || window.innerHeight / 2,
+			color: habit.color
+		};
+		
+		habit.checked = true;
+		habit.count = (habit.count || 0) + 1;
+		
+		uni.vibrateShort({
+			success: () => {},
+			fail: () => {}
+		});
+		
+		uni.showToast({
+			title: '打卡成功！',
+			icon: 'success',
+			duration: 1000
+		});
+	} else {
+		habit.checked = false;
+	}
 };
 </script>
 

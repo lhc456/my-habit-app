@@ -14,7 +14,7 @@ export default {
 
 <style lang="scss">
 /* 全局样式 - 马卡龙色系主题 */
-@import 'wot-design-uni/style.css';
+// @import 'wot-design-uni/style.css';
 
 page {
   background-color: #f5f5f5;

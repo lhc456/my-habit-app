@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "ask": [
+      "Read(!/Users/lihanchao/Documents/other/myApp/my-habit-app/**)",
+      "Edit(!/Users/lihanchao/Documents/other/myApp/my-habit-app/**)"
+    ],
+    "allow": [
+      "Read(/Users/lihanchao/Documents/other/myApp/my-habit-app/**)",
+      "Edit(/Users/lihanchao/Documents/other/myApp/my-habit-app/**)"
+    ]
+  },
+  "memoryImport": {},
+  "monitoring": {}
+}
