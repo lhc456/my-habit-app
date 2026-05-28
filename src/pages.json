@@ -1,16 +1,58 @@
 {
-	"pages": [ //pages数组中第一项表示应用启动页，参考：https://uniapp.dcloud.io/collocation/pages
+	"pages": [
 		{
 			"path": "pages/index/index",
 			"style": {
-				"navigationBarTitleText": "uni-app"
+				"navigationBarTitleText": "今日习惯"
+			}
+		},
+		{
+			"path": "pages/habits/index",
+			"style": {
+				"navigationBarTitleText": "习惯管理"
+			}
+		},
+		{
+			"path": "pages/pomodoro/index",
+			"style": {
+				"navigationBarTitleText": "番茄计时"
+			}
+		},
+		{
+			"path": "pages/mine/index",
+			"style": {
+				"navigationBarTitleText": "我的"
 			}
 		}
 	],
 	"globalStyle": {
 		"navigationBarTextStyle": "black",
-		"navigationBarTitleText": "uni-app",
-		"navigationBarBackgroundColor": "#F8F8F8",
+		"navigationBarTitleText": "每日习惯",
+		"navigationBarBackgroundColor": "#FFFFFF",
 		"backgroundColor": "#F8F8F8"
+	},
+	"tabBar": {
+		"color": "#999999",
+		"selectedColor": "#07c160",
+		"backgroundColor": "#ffffff",
+		"borderStyle": "black",
+		"list": [
+			{
+				"pagePath": "pages/index/index",
+				"text": " 今日"
+			},
+			{
+				"pagePath": "pages/habits/index",
+				"text": " 全部"
+			},
+			{
+				"pagePath": "pages/pomodoro/index",
+				"text": "🍅 番茄钟"
+			},
+			{
+				"pagePath": "pages/mine/index",
+				"text": " 我的"
+			}
+		]
 	}
 }
