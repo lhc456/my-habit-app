@@ -1,0 +1,169 @@
+<template>
+	<view class="container">
+		<view class="timer-mode">
+			<text class="mode-btn" :class="{ active: mode === 'timer' }" @click="mode = 'timer'">正计时</text>
+			<text class="mode-btn" :class="{ active: mode === 'countdown' }" @click="mode = 'countdown'">倒计时</text>
+			<text class="mode-btn" :class="{ active: mode === 'pomodoro' }" @click="mode = 'pomodoro'">番茄钟</text>
+		</view>
+		
+		<view class="timer-display">
+			<view class="circle" @click="toggleTimer">
+				<text class="time">{{ displayTime }}</text>
+			</view>
+		</view>
+		
+		<view class="habit-icon">
+			<view class="icon-circle">
+				<wd-icon name="calendar" size="40" color="#fff"></wd-icon>
+			</view>
+			<text class="habit-name">写日记</text>
+		</view>
+		
+		<view class="start-btn" :style="{ backgroundColor: isRunning ? '#ff6b8a' : '#ff0060' }" @click="toggleTimer">
+			<text>{{ isRunning ? '暂停' : '开始' }}</text>
+		</view>
+	</view>
+</template>
+
+<script setup>
+import { ref, computed, onUnmounted } from 'vue';
+
+const mode = ref('pomodoro');
+const isRunning = ref(false);
+const seconds = ref(25 * 60);
+
+let timer = null;
+
+const displayTime = computed(() => {
+	const mins = Math.floor(seconds.value / 60);
+	const secs = seconds.value % 60;
+	return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+});
+
+const toggleTimer = () => {
+	if (isRunning.value) {
+		clearInterval(timer);
+	} else {
+		timer = setInterval(() => {
+			if (mode.value === 'countdown') {
+				if (seconds.value > 0) {
+					seconds.value--;
+				} else {
+					clearInterval(timer);
+					isRunning.value = false;
+				}
+			} else {
+				seconds.value++;
+			}
+		}, 1000);
+	}
+	isRunning.value = !isRunning.value;
+};
+
+onUnmounted(() => {
+	if (timer) {
+		clearInterval(timer);
+	}
+});
+</script>
+
+<style lang="scss" scoped>
+.container {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 40rpx;
+	min-height: 100vh;
+}
+
+.timer-mode {
+	display: flex;
+	border: 2rpx solid #333;
+	border-radius: 30rpx;
+	overflow: hidden;
+	margin-bottom: 80rpx;
+	
+	.mode-btn {
+		padding: 16rpx 32rpx;
+		font-size: 28rpx;
+		color: #333;
+		transition: all 0.3s ease;
+		
+		&.active {
+			background-color: #333;
+			color: #fff;
+		}
+	}
+}
+
+.timer-display {
+	display: flex;
+	justify-content: center;
+	margin-bottom: 60rpx;
+}
+
+.circle {
+	width: 400rpx;
+	height: 400rpx;
+	border-radius: 50%;
+	border: 4rpx solid #333;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	transition: all 0.3s ease;
+	cursor: pointer;
+	
+	&:active {
+		transform: scale(0.98);
+	}
+}
+
+.time {
+	font-size: 80rpx;
+	font-weight: bold;
+	color: #333;
+}
+
+.habit-icon {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	margin-bottom: 60rpx;
+}
+
+.icon-circle {
+	width: 100rpx;
+	height: 100rpx;
+	border-radius: 50%;
+	background-color: #a8d8c9;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	margin-bottom: 16rpx;
+}
+
+.habit-name {
+	font-size: 28rpx;
+	color: #666;
+}
+
+.start-btn {
+	width: 300rpx;
+	height: 80rpx;
+	border-radius: 40rpx;
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	transition: all 0.3s ease;
+	
+	&:active {
+		opacity: 0.8;
+		transform: scale(0.95);
+	}
+	
+	text {
+		color: #fff;
+		font-size: 32rpx;
+	}
+}
+</style>
