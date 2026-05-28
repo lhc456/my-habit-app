@@ -13,147 +13,102 @@
 			@complete="particleEffect.show = false"
 		/>
 		
-		<!-- 任意时间 -->
-		<view class="time-section">
+		<view 
+			v-for="(category, catIndex) in store.categories" 
+			:key="catIndex"
+			class="time-section"
+		>
 			<view class="section-header">
 				<view class="section-title">
-					<text class="section-text">任意时间</text>
+					<text class="section-text">{{ category.name }}</text>
 				</view>
 				<wd-icon name="arrow-up" size="20"></wd-icon>
 			</view>
 			
 			<view class="habit-grid">
 				<view 
-					v-for="(habit, index) in anyTimeHabits" 
-					:key="index"
+					v-for="(habit, habitIndex) in category.habits" 
+					:key="habitIndex"
 					class="habit-card"
-					@click="toggleCheck(habit, $event)"
+					:class="{ 'shake': habit.shaking, 'fade-out': habit.fading }"
+					@click="toggleCheck(catIndex, habitIndex, catIndex === 0 ? 'any' : 'other', $event)"
 				>
 					<view class="icon-circle" :style="{ backgroundColor: habit.color }">
 						<wd-icon :name="habit.icon" size="28" color="#fff"></wd-icon>
+						<text class="habit-initial">{{ habit.name.charAt(0) }}</text>
 					</view>
 					<text class="habit-name">{{ habit.name }}</text>
-					<text class="habit-status" :class="{ 'completed': habit.checked }">
+					<text v-if="catIndex !== 0" class="habit-status" :class="{ 'completed': habit.checked }">
 						{{ habit.checked ? '已完成' : '未完成' }}
 					</text>
 				</view>
 			</view>
 		</view>
 		
-		<!-- 起床之后 -->
-		<view class="time-section">
-			<view class="section-header">
-				<view class="section-title">
-					<text class="section-text">起床之后</text>
-				</view>
-				<wd-icon name="arrow-up" size="20"></wd-icon>
-			</view>
-			
-			<view class="habit-grid">
-				<view 
-					v-for="(habit, index) in morningHabits" 
-					:key="index"
-					class="habit-card"
-					@click="toggleCheck(habit, $event)"
-				>
-					<view class="icon-circle" :style="{ backgroundColor: habit.color }">
-						<wd-icon :name="habit.icon" size="28" color="#fff"></wd-icon>
-					</view>
-					<text class="habit-name">{{ habit.name }}</text>
-					<text class="habit-status" :class="{ 'completed': habit.checked }">
-						{{ habit.checked ? '已完成' : '未完成' }}
-					</text>
-				</view>
-			</view>
-		</view>
-		
-		<!-- 晨间习惯 -->
-		<view class="time-section">
-			<view class="section-header">
-				<view class="section-title">
-					<text class="section-text">晨间习惯</text>
-				</view>
-				<wd-icon name="arrow-up" size="20"></wd-icon>
-			</view>
-			
-			<view class="habit-grid">
-				<view 
-					v-for="(habit, index) in dayHabits" 
-					:key="index"
-					class="habit-card"
-					@click="toggleCheck(habit, $event)"
-				>
-					<view class="icon-circle" :style="{ backgroundColor: habit.color }">
-						<wd-icon :name="habit.icon" size="28" color="#fff"></wd-icon>
-					</view>
-					<text class="habit-name">{{ habit.name }}</text>
-					<text class="habit-status" :class="{ 'completed': habit.checked }">
-						{{ habit.checked ? '已完成' : '未完成' }}
-					</text>
-				</view>
-			</view>
+		<view class="empty-tip" v-if="store.categories.length === 0">
+			<wd-icon name="inbox" size="80" color="#ddd"></wd-icon>
+			<text class="empty-text">暂无习惯，去添加吧~</text>
 		</view>
 	</view>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import ParticleEffect from '@/components/ParticleEffect.vue';
+import { ref, onMounted } from 'vue'
+import { useHabitsStore } from '@/store/modules/habits'
+import ParticleEffect from '@/components/ParticleEffect.vue'
+
+const store = useHabitsStore()
 
 const particleEffect = ref({
 	show: false,
 	x: 0,
 	y: 0,
 	color: '#7ec699'
-});
+})
 
-const anyTimeHabits = ref([
-	{ name: '练习新技能', icon: 'chart-bar', color: '#b5a8e6', checked: false, count: 0 },
-	{ name: '醒来喝水', icon: 'cup', color: '#f5a8c9', checked: false, count: 0 },
-	{ name: '睡前刷牙', icon: 'tooth', color: '#a8d8c9', checked: true, count: 1 },
-	{ name: '背单词', icon: 'book-open', color: '#d4b5f0', checked: false, count: 0 },
-]);
+onMounted(() => {
+	store.loadHabits()
+})
 
-const morningHabits = ref([
-	{ name: '写日记', icon: 'calendar', color: '#a8d8c9', checked: false, count: 0 },
-	{ name: '写待办事项', icon: 'pen', color: '#f0d67d', checked: false, count: 0 },
-	{ name: '狗', icon: 'dog', color: '#f9e5b5', checked: false, count: 0 },
-]);
-
-const dayHabits = ref([
-	{ name: '打坐冥想', icon: 'meditation', color: '#a8d8d8', checked: false, count: 0 },
-	{ name: '休息一下', icon: 'chat', color: '#c9f0d4', checked: false, count: 0 },
-	{ name: '使用番茄钟', icon: 'tomato', color: '#d4b5f0', checked: false, count: 0 },
-	{ name: '浇花', icon: 'water-drop', color: '#a8d8d8', checked: false, count: 0 },
-]);
-
-const toggleCheck = (habit, event) => {
-	if (!habit.checked) {
-		const touch = event.touches?.[0] || event.detail || {};
-		particleEffect.value = {
-			show: true,
-			x: touch.clientX || touch.pageX || window.innerWidth / 2,
-			y: touch.clientY || touch.pageY || window.innerHeight / 2,
-			color: habit.color
-		};
-		
-		habit.checked = true;
-		habit.count = (habit.count || 0) + 1;
-		
-		uni.vibrateShort({
-			success: () => {},
-			fail: () => {}
-		});
-		
-		uni.showToast({
-			title: '打卡成功！',
-			icon: 'success',
-			duration: 1000
-		});
+const toggleCheck = (catIndex, habitIndex, type, event) => {
+	const habit = store.categories[catIndex].habits[habitIndex]
+	
+	if (type === 'any') {
+		if (!habit.checked) {
+			const touch = event.touches?.[0] || event.detail || {}
+			particleEffect.value = {
+				show: true,
+				x: touch.clientX || touch.pageX || window.innerWidth / 2,
+				y: touch.clientY || touch.pageY || window.innerHeight / 2,
+				color: habit.color
+			}
+			
+			habit.shaking = true
+			
+			setTimeout(() => {
+				habit.shaking = false
+				habit.fading = true
+				
+				setTimeout(() => {
+					store.deleteHabit(catIndex, habitIndex)
+				}, 500)
+			}, 500)
+			
+			uni.vibrateShort({
+				success: () => {},
+				fail: () => {}
+			})
+		}
 	} else {
-		habit.checked = false;
+		if (habit.type === 'quick') {
+			store.checkHabit(catIndex, habitIndex)
+		} else {
+			uni.navigateTo({
+				url: `/pages/pomodoro/index?habit=${encodeURIComponent(JSON.stringify(habit))}`
+			})
+		}
 	}
-};
+}
 </script>
 
 <style lang="scss" scoped>
@@ -214,6 +169,31 @@ const toggleCheck = (habit, event) => {
 	&:active {
 		transform: scale(0.95);
 	}
+	
+	&.shake {
+		animation: shake 0.5s ease;
+	}
+	
+	&.fade-out {
+		animation: fadeOut 0.5s ease forwards;
+	}
+}
+
+@keyframes shake {
+	0%, 100% { transform: translateX(0); }
+	10%, 30%, 50%, 70%, 90% { transform: translateX(-10rpx); }
+	20%, 40%, 60%, 80% { transform: translateX(10rpx); }
+}
+
+@keyframes fadeOut {
+	from {
+		opacity: 1;
+		transform: scale(1);
+	}
+	to {
+		opacity: 0;
+		transform: scale(0.8);
+	}
 }
 
 .icon-circle {
@@ -226,6 +206,7 @@ const toggleCheck = (habit, event) => {
 	margin-bottom: 16rpx;
 	border: 3rpx solid #333;
 	transition: all 0.3s ease;
+	position: relative;
 }
 
 .habit-name {
@@ -244,5 +225,26 @@ const toggleCheck = (habit, event) => {
 		color: #7ec699;
 		font-weight: bold;
 	}
+}
+
+.habit-initial {
+	position: absolute;
+	font-size: 48rpx;
+	font-weight: bold;
+	color: #fff;
+	opacity: 0.3;
+}
+
+.empty-tip {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	padding: 120rpx 0;
+	gap: 20rpx;
+}
+
+.empty-text {
+	font-size: 28rpx;
+	color: #999;
 }
 </style>
