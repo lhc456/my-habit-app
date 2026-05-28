@@ -16,6 +16,9 @@ yarn-error.log*
 .project
 .idea
 .vscode
+.codegraph
+.cursor
+.qwen
 *.suo
 *.ntvs*
 *.njsproj
