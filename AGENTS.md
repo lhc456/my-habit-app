@@ -17,7 +17,7 @@
 - **构建工具**: Vite 5.2
 - **UI 组件**: Wot Design Uni
 - **图标**: IconPark (字节跳动开源)
-- **样式**: SCSS
+- **样式**: SCSS (`sass@1.100.0` + `sass-loader@14`)
 - **状态管理**: Pinia (待实现)
 - **目标平台**: H5、小程序、App
 

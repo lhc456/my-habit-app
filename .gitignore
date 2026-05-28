@@ -10,7 +10,10 @@ lerna-debug.log*
 node_modules
 .DS_Store
 dist
+.qwen
+
 *.local
+
 
 # Editor directories and files
 .idea

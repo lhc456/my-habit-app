@@ -1,3 +1,18 @@
+<script>
+export default {
+  onLaunch: function () {
+    console.log('App Launch')
+  },
+  onShow: function () {
+    console.log('App Show')
+  },
+  onHide: function () {
+    console.log('App Hide')
+  },
+}
+</script>
+
+<style lang="scss">
 /* 全局样式 - 马卡龙色系主题 */
 @import 'wot-design-uni/style.css';
 
@@ -35,3 +50,4 @@ page {
   --radius-lg: 24rpx;
   --radius-circle: 50%;
 }
+</style>

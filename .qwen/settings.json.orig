@@ -4,8 +4,7 @@
       "Bash(git init)",
       "Bash(git fetch *)",
       "Bash(git checkout *)",
-      "Bash(git branch *)",
-      "Bash(pkill *)"
+      "Bash(git branch *)"
     ]
   },
   "$version": 4
