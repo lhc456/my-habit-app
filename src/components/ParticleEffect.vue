@@ -13,6 +13,7 @@
 import { ref, onMounted } from 'vue';
 
 const props = defineProps({
+	show: { type: Boolean, default: true },
 	x: { type: Number, required: true },
 	y: { type: Number, required: true },
 	color: { type: String, default: '#7ec699' }
