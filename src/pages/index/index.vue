@@ -103,8 +103,9 @@ const toggleCheck = (catIndex, habitIndex, type, event) => {
 		if (habit.type === 'quick') {
 			store.checkHabit(catIndex, habitIndex)
 		} else {
-			uni.navigateTo({
-				url: `/pages/pomodoro/index?habit=${encodeURIComponent(JSON.stringify(habit))}`
+			store.selectedHabit = habit
+			uni.switchTab({
+				url: '/pages/pomodoro/index'
 			})
 		}
 	}

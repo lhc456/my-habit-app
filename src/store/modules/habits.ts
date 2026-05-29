@@ -19,6 +19,7 @@ export interface Category {
 
 export const useHabitsStore = defineStore('habits', () => {
 	const categories = ref<Category[]>([])
+	const selectedHabit = ref<Habit | null>(null)
 
 	const loadHabits = () => {
 		try {
@@ -106,6 +107,7 @@ export const useHabitsStore = defineStore('habits', () => {
 
 	return {
 		categories,
+		selectedHabit,
 		loadHabits,
 		addHabit,
 		updateHabit,

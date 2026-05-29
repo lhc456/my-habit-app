@@ -13,10 +13,10 @@
 		</view>
 		
 		<view class="habit-icon">
-			<view class="icon-circle">
-				<wd-icon name="calendar" size="40" color="#fff"></wd-icon>
+			<view class="icon-circle" :style="{ backgroundColor: currentHabit?.color || '#a8d8c9' }">
+				<wd-icon :name="currentHabit?.icon || 'calendar'" size="40" color="#fff"></wd-icon>
 			</view>
-			<text class="habit-name">写日记</text>
+			<text class="habit-name">{{ currentHabit?.name || '写日记' }}</text>
 		</view>
 		
 		<view class="start-btn" :style="{ backgroundColor: isRunning ? '#ff6b8a' : '#7ec699' }" @click="toggleTimer">
@@ -26,12 +26,15 @@
 </template>
 
 <script setup>
-import { ref, computed, onUnmounted } from 'vue';
+import { ref, computed, onUnmounted, onMounted } from 'vue';
+import { useHabitsStore } from '@/store/modules/habits';
 
+const store = useHabitsStore();
 const mode = ref('countdown');
 const isRunning = ref(false);
 const seconds = ref(25 * 60);
 const initialSeconds = ref(25 * 60);
+const currentHabit = ref(null);
 
 let timer = null;
 
@@ -39,6 +42,10 @@ const displayTime = computed(() => {
 	const mins = Math.floor(seconds.value / 60);
 	const secs = seconds.value % 60;
 	return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+});
+
+onMounted(() => {
+	currentHabit.value = store.selectedHabit;
 });
 
 const switchMode = (newMode) => {
