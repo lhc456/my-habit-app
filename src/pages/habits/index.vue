@@ -3,7 +3,7 @@
 		<view class="header">
 			<text class="title">习惯管理</text>
 			<view class="add-btn" @click="showAddDialog = true">
-				<wd-icon name="circle-plus" size="32" color="#7ec699"></wd-icon>
+				<wd-icon name="add-circle" size="32" color="#7ec699"></wd-icon>
 			</view>
 		</view>
 		
@@ -28,7 +28,7 @@
 					<view class="habit-card" :style="{ backgroundColor: habit.color }">
 						<view class="habit-icon-wrap">
 							<wd-icon :name="habit.icon" size="40" color="#fff"></wd-icon>
-							<text class="habit-initial">{{ habit.name.charAt(0) }}</text>
+							<!-- <text class="habit-initial">{{ habit.name.charAt(0) }}</text> -->
 						</view>
 						<text class="habit-name">{{ habit.name }}</text>
 						<view class="habit-type-tag" :class="habit.type === 'timer' ? 'timer' : 'quick'">
@@ -42,7 +42,7 @@
 			</view>
 			
 			<view class="empty-tip" v-else>
-				<wd-icon name="inbox" size="60" color="#ddd"></wd-icon>
+				<wd-icon name="read" size="60" color="#ddd"></wd-icon>
 				<text class="empty-text">暂无习惯，点击右上角添加</text>
 			</view>
 		</view>
@@ -83,7 +83,7 @@
 								:class="{ active: formData.type === 'timer' }"
 								@click="formData.type = 'timer'"
 							>
-								<wd-icon name="timer" size="24" :color="formData.type === 'timer' ? '#7ec699' : '#ccc'"></wd-icon>
+								<wd-icon name="clock" size="24" :color="formData.type === 'timer' ? '#7ec699' : '#ccc'"></wd-icon>
 								<text>计时习惯</text>
 							</view>
 						</view>
@@ -150,6 +150,7 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useHabitsStore } from '@/store/modules/habits'
+import WdIcon from 'wot-design-uni/components/wd-icon/wd-icon.vue'
 
 const store = useHabitsStore()
 
@@ -170,20 +171,20 @@ const formData = ref({
 
 const iconOptions = [
 	{ label: '打卡', value: 'check' },
-	{ label: '喝水', value: 'cup' },
-	{ label: '书籍', value: 'book-open' },
-	{ label: '运动', value: 'running' },
-	{ label: '冥想', value: 'meditation' },
-	{ label: '日记', value: 'calendar' },
-	{ label: '番茄钟', value: 'tomato' },
-	{ label: '刷牙', value: 'tooth' },
-	{ label: '宠物', value: 'dog' },
-	{ label: '浇花', value: 'water-drop' },
-	{ label: '音乐', value: 'music' },
+	{ label: '喝水', value: 'gift' },
+	{ label: '书籍', value: 'books' },
+	{ label: '运动', value: 'heart' },
+	{ label: '冥想', value: 'tips' },
+	{ label: '日记', value: 'edit' },
+	{ label: '番茄钟', value: 'clock' },
+	{ label: '刷牙', value: 'heart' },
+	{ label: '宠物', value: 'star' },
+	{ label: '浇花', value: 'cloud' },
+	{ label: '音乐', value: 'sound' },
 	{ label: '技能', value: 'chart-bar' },
-	{ label: '待办', value: 'pen' },
+	{ label: '待办', value: 'note' },
 	{ label: '休息', value: 'chat' },
-	{ label: '咖啡', value: 'coffee' },
+	{ label: '咖啡', value: 'gift' },
 	{ label: '星星', value: 'star' },
 ]
 
@@ -485,7 +486,7 @@ const saveHabit = () => {
 
 .dialog-content {
 	padding: 30rpx;
-	max-height: 60vh;
+	max-height: 58vh;
 	overflow-y: auto;
 }
 

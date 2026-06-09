@@ -2,7 +2,7 @@
 	<view class="container">
 		<view class="header">
 			<text class="title">今日习惯</text>
-			<wd-icon name="message" size="24" color="#666"></wd-icon>
+			<wd-icon name="chat" size="24" color="#666"></wd-icon>
 		</view>
 		
 		<ParticleEffect 
@@ -35,7 +35,7 @@
 				>
 					<view class="icon-circle" :style="{ backgroundColor: habit.color }">
 						<wd-icon :name="habit.icon" size="28" color="#fff"></wd-icon>
-						<text class="habit-initial">{{ habit.name.charAt(0) }}</text>
+						<!-- <text class="habit-initial">{{ habit.name.charAt(0) }}</text> -->
 					</view>
 					<text class="habit-name">{{ habit.name }}</text>
 					<text v-if="catIndex !== 0" class="habit-status" :class="{ 'completed': habit.checked }">
@@ -46,7 +46,7 @@
 		</view>
 		
 		<view class="empty-tip" v-if="store.categories.length === 0">
-			<wd-icon name="inbox" size="80" color="#ddd"></wd-icon>
+			<wd-icon name="read" size="80" color="#ddd"></wd-icon>
 			<text class="empty-text">暂无习惯，去添加吧~</text>
 		</view>
 	</view>
@@ -56,6 +56,7 @@
 import { ref, onMounted } from 'vue'
 import { useHabitsStore } from '@/store/modules/habits'
 import ParticleEffect from '@/components/ParticleEffect.vue'
+import WdIcon from 'wot-design-uni/components/wd-icon/wd-icon.vue'
 
 const store = useHabitsStore()
 
@@ -103,6 +104,7 @@ const toggleCheck = (catIndex, habitIndex, type, event) => {
 		if (habit.type === 'quick') {
 			store.checkHabit(catIndex, habitIndex)
 		} else {
+			// 跳转到番茄钟页面创建计时器
 			store.selectedHabit = habit
 			uni.switchTab({
 				url: '/pages/pomodoro/index'
