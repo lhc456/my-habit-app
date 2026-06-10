@@ -13,6 +13,12 @@
 			}
 		},
 		{
+			"path": "pages/habits/detail",
+			"style": {
+				"navigationBarTitleText": "习惯详情"
+			}
+		},
+		{
 			"path": "pages/pomodoro/index",
 			"style": {
 				"navigationBarTitleText": "番茄计时"

@@ -8,6 +8,7 @@ export interface Habit {
 	type: 'quick' | 'timer'
 	checked?: boolean
 	count?: number
+	checkRecords?: string[]
 }
 
 export interface Category {
@@ -143,8 +144,34 @@ export const useHabitsStore = defineStore('habits', () => {
 		habit.checked = !habit.checked
 		if (habit.checked) {
 			habit.count = (habit.count || 0) + 1
+			if (!habit.checkRecords) habit.checkRecords = []
+			const today = new Date().toISOString().split('T')[0]
+			habit.checkRecords.push(today)
+		} else {
+			habit.count = Math.max(0, (habit.count || 1) - 1)
+			if (habit.checkRecords) {
+				const today = new Date().toISOString().split('T')[0]
+				const idx = habit.checkRecords.lastIndexOf(today)
+				if (idx >= 0) habit.checkRecords.splice(idx, 1)
+			}
 		}
 		saveHabits()
+	}
+
+	/** 获取指定习惯的每月打卡统计 */
+	const getMonthlyStats = (catIndex: number, habitIndex: number) => {
+		const habit = categories.value[catIndex]?.habits[habitIndex]
+		if (!habit?.checkRecords) return []
+		
+		const monthMap: Record<string, number> = {}
+		habit.checkRecords.forEach(date => {
+			const month = date.substring(0, 7) // '2026-06'
+			monthMap[month] = (monthMap[month] || 0) + 1
+		})
+		
+		return Object.entries(monthMap)
+			.map(([month, count]) => ({ month, count }))
+			.sort((a, b) => a.month.localeCompare(b.month))
 	}
 
 	const removeHabit = (categoryIndex: number, habitIndex: number) => {
@@ -161,6 +188,7 @@ export const useHabitsStore = defineStore('habits', () => {
 		deleteHabit,
 		checkHabit,
 		removeHabit,
+		getMonthlyStats,
 		saveHabits
 	}
 })

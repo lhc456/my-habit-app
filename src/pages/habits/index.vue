@@ -3,48 +3,46 @@
 		<view class="header">
 			<text class="title">习惯管理</text>
 			<view class="add-btn" @click="showAddDialog = true">
-				<wd-icon name="add-circle" size="32" color="#7ec699"></wd-icon>
+				<wd-icon name="add-circle" size="28" color="#7ec699"></wd-icon>
 			</view>
 		</view>
 		
-		<view class="category-section" v-for="(category, catIndex) in store.categories" :key="catIndex">
-			<view class="category-header">
-				<view class="category-title">
-					<view class="category-icon" :style="{ backgroundColor: category.color }">
-						<wd-icon :name="category.icon" size="24" color="#fff"></wd-icon>
-					</view>
-					<text class="category-text">{{ category.name }}</text>
+		<view class="habit-list" v-if="allHabits.length > 0">
+			<view 
+				v-for="item in allHabits" 
+				:key="`${item.catIndex}-${item.habitIndex}`"
+				class="swipe-container"
+			>
+				<view class="swipe-actions">
+					<view class="swipe-action edit" @click.stop="onSwipeEdit(item.catIndex, item.habitIndex)">编辑</view>
+					<view class="swipe-action delete" @click.stop="onSwipeDelete(item.catIndex, item.habitIndex)">删除</view>
 				</view>
-				<text class="category-count">{{ category.habits.length }}个习惯</text>
-			</view>
-			
-			<view class="habit-list" v-if="category.habits.length > 0">
 				<view 
-					v-for="(habit, habitIndex) in category.habits" 
-					:key="habitIndex"
-					class="habit-item"
-					@longpress="editHabit(catIndex, habitIndex)"
+					class="habit-row"
+					:class="{ swiped: swipedCat === item.catIndex && swipedIdx === item.habitIndex }"
+					@touchstart="onTouchStart($event, item.catIndex, item.habitIndex)"
+					@touchend="onTouchEnd($event, item.catIndex, item.habitIndex)"
+					@click="onRowClick(item.catIndex, item.habitIndex)"
 				>
-					<view class="habit-card" :style="{ backgroundColor: habit.color }">
-						<view class="habit-icon-wrap">
-							<wd-icon :name="habit.icon" size="40" color="#fff"></wd-icon>
-							<!-- <text class="habit-initial">{{ habit.name.charAt(0) }}</text> -->
-						</view>
-						<text class="habit-name">{{ habit.name }}</text>
-						<view class="habit-type-tag" :class="habit.type === 'timer' ? 'timer' : 'quick'">
-							{{ habit.type === 'timer' ? '计时' : '快速' }}
-						</view>
-						<view class="delete-btn" @click.stop="deleteHabit(catIndex, habitIndex)">
-							<wd-icon name="close" size="20" color="#fff"></wd-icon>
+					<view class="habit-row-icon" :style="{ backgroundColor: item.habit.color }">
+						<wd-icon :name="item.habit.icon" size="24" color="#fff"></wd-icon>
+					</view>
+					<view class="habit-row-info">
+						<text class="habit-row-name">{{ item.habit.name }}</text>
+					</view>
+					<view class="habit-row-meta">
+						<text class="habit-row-count">{{ item.habit.count || 0 }}次</text>
+						<view class="habit-row-tag" :class="item.habit.type === 'timer' ? 'timer' : 'quick'">
+							{{ item.habit.type === 'timer' ? '计时' : '快速' }}
 						</view>
 					</view>
 				</view>
 			</view>
-			
-			<view class="empty-tip" v-else>
-				<wd-icon name="read" size="60" color="#ddd"></wd-icon>
-				<text class="empty-text">暂无习惯，点击右上角添加</text>
-			</view>
+		</view>
+		
+		<view class="empty-tip" v-else>
+			<wd-icon name="read" size="48" color="#ddd"></wd-icon>
+			<text class="empty-text">暂无习惯，点击右上角添加</text>
 		</view>
 		
 		<view class="dialog-mask" v-if="showAddDialog" @click="closeDialog">
@@ -52,7 +50,7 @@
 				<view class="dialog-header">
 					<text class="dialog-title">{{ editingIndex.cat >= 0 ? '编辑习惯' : '添加习惯' }}</text>
 					<view class="dialog-close" @click="closeDialog">
-						<wd-icon name="close" size="24" color="#666"></wd-icon>
+						<wd-icon name="close" size="18" color="#999"></wd-icon>
 					</view>
 				</view>
 				
@@ -94,12 +92,13 @@
 						<view class="icon-grid">
 							<view 
 								v-for="icon in iconOptions" 
-								:key="icon.value"
+								:key="icon.id"
 								class="icon-item"
 								:class="{ active: formData.icon === icon.value }"
+								:style="{ borderColor: formData.icon === icon.value ? '#7ec699' : 'transparent' }"
 								@click="formData.icon = icon.value"
 							>
-								<wd-icon :name="icon.value" size="28" :color="formData.icon === icon.value ? '#7ec699' : '#666'"></wd-icon>
+								<wd-icon :name="icon.value" size="28" :color="formData.icon === icon.value ? '#7ec699' : icon.color"></wd-icon>
 								<text class="icon-label">{{ icon.label }}</text>
 							</view>
 						</view>
@@ -107,6 +106,9 @@
 					
 					<view class="form-item">
 						<text class="form-label">颜色</text>
+						<!-- <view class="color-preview" :style="{ backgroundColor: formData.color }">
+							<text class="color-preview-text">{{ formData.color }}</text>
+						</view> -->
 						<view class="color-grid">
 							<view 
 								v-for="color in colorOptions" 
@@ -116,7 +118,7 @@
 								:style="{ backgroundColor: color }"
 								@click="formData.color = color"
 							>
-								<wd-icon v-if="formData.color === color" name="check" size="20" color="#fff"></wd-icon>
+								<wd-icon v-if="formData.color === color" name="check" size="18" color="#fff"></wd-icon>
 							</view>
 						</view>
 					</view>
@@ -131,7 +133,7 @@
 								:class="{ active: formData.category === index }"
 								@click="formData.category = index"
 							>
-								<wd-icon :name="cat.icon" size="20" :color="formData.category === index ? '#7ec699' : '#666'"></wd-icon>
+								<wd-icon :name="cat.icon" size="20" :color="formData.category === index ? '#7ec699' : cat.color"></wd-icon>
 								<text>{{ cat.name }}</text>
 							</view>
 						</view>
@@ -148,7 +150,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { useHabitsStore } from '@/store/modules/habits'
 import WdIcon from 'wot-design-uni/components/wd-icon/wd-icon.vue'
 
@@ -156,6 +158,17 @@ const store = useHabitsStore()
 
 onMounted(() => {
 	store.loadHabits()
+})
+
+// 扁平化所有习惯
+const allHabits = computed(() => {
+	const result = []
+	store.categories.forEach((cat, catIndex) => {
+		cat.habits.forEach((habit, habitIndex) => {
+			result.push({ habit, catIndex, habitIndex })
+		})
+	})
+	return result
 })
 
 const showAddDialog = ref(false)
@@ -170,22 +183,22 @@ const formData = ref({
 })
 
 const iconOptions = [
-	{ label: '打卡', value: 'check' },
-	{ label: '喝水', value: 'gift' },
-	{ label: '书籍', value: 'books' },
-	{ label: '运动', value: 'heart' },
-	{ label: '冥想', value: 'tips' },
-	{ label: '日记', value: 'edit' },
-	{ label: '番茄钟', value: 'clock' },
-	{ label: '刷牙', value: 'heart' },
-	{ label: '宠物', value: 'star' },
-	{ label: '浇花', value: 'cloud' },
-	{ label: '音乐', value: 'sound' },
-	{ label: '技能', value: 'chart-bar' },
-	{ label: '待办', value: 'note' },
-	{ label: '休息', value: 'chat' },
-	{ label: '咖啡', value: 'gift' },
-	{ label: '星星', value: 'star' },
+	{ id: 1, label: '打卡', value: 'check', color: '#7ec699' },
+	{ id: 2, label: '喝水', value: 'gift', color: '#a8d8d8' },
+	{ id: 3, label: '书籍', value: 'books', color: '#c4b5fd' },
+	{ id: 4, label: '运动', value: 'heart', color: '#ffb6c1' },
+	{ id: 5, label: '冥想', value: 'tips', color: '#b5a8e6' },
+	{ id: 6, label: '日记', value: 'edit', color: '#f9e5b5' },
+	{ id: 7, label: '番茄钟', value: 'clock', color: '#ffd6a5' },
+	{ id: 8, label: '刷牙', value: 'like', color: '#a8d8c9' },
+	{ id: 9, label: '宠物', value: 'star', color: '#f5a8c9' },
+	{ id: 10, label: '浇花', value: 'cloud', color: '#a8d8d8' },
+	{ id: 11, label: '音乐', value: 'sound', color: '#d4b5f0' },
+	{ id: 12, label: '技能', value: 'chart-bar', color: '#c4b5fd' },
+	{ id: 13, label: '待办', value: 'note', color: '#f0d67d' },
+	{ id: 14, label: '休息', value: 'chat', color: '#c9f0d4' },
+	{ id: 15, label: '咖啡', value: 'help', color: '#ffb6c1' },
+	{ id: 16, label: '星星', value: 'flag', color: '#f9e5b5' },
 ]
 
 const colorOptions = [
@@ -270,6 +283,59 @@ const saveHabit = () => {
 	
 	closeDialog()
 }
+
+// 左滑手势
+const swipedCat = ref(-1)
+const swipedIdx = ref(-1)
+let touchStartX = 0
+let preventClick = false
+
+const onTouchStart = (e, catIdx, idx) => {
+	touchStartX = e.touches[0].clientX
+	preventClick = false
+}
+
+const onTouchEnd = (e, catIdx, idx) => {
+	const deltaX = e.changedTouches[0].clientX - touchStartX
+	const isSwiped = swipedCat.value === catIdx && swipedIdx.value === idx
+	
+	if (deltaX < -50) {
+		// 左滑 → 打开操作按钮
+		swipedCat.value = catIdx
+		swipedIdx.value = idx
+		preventClick = true
+	} else if (isSwiped) {
+		// 已展开时点击 → 关闭
+		swipedCat.value = -1
+		swipedIdx.value = -1
+		preventClick = true
+	} else {
+		swipedCat.value = -1
+		swipedIdx.value = -1
+	}
+}
+
+const onRowClick = (catIdx, idx) => {
+	if (preventClick) {
+		preventClick = false
+		return
+	}
+	uni.navigateTo({
+		url: `/pages/habits/detail?catIndex=${catIdx}&habitIndex=${idx}`
+	})
+}
+
+const onSwipeEdit = (catIdx, idx) => {
+	swipedCat.value = -1
+	swipedIdx.value = -1
+	editHabit(catIdx, idx)
+}
+
+const onSwipeDelete = (catIdx, idx) => {
+	swipedCat.value = -1
+	swipedIdx.value = -1
+	deleteHabit(catIdx, idx)
+}
 </script>
 
 <style lang="scss" scoped>
@@ -300,133 +366,113 @@ const saveHabit = () => {
 	padding: 10rpx;
 }
 
-.category-section {
-	margin-bottom: 40rpx;
-}
-
-.category-header {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
-	margin-bottom: 20rpx;
-	padding: 0 10rpx;
-}
-
-.category-title {
-	display: flex;
-	align-items: center;
-	gap: 16rpx;
-}
-
-.category-icon {
-	width: 60rpx;
-	height: 60rpx;
-	border-radius: 50%;
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border: 3rpx solid #333;
-}
-
-.category-text {
-	font-size: 32rpx;
-	font-weight: bold;
-	color: #333;
-}
-
-.category-count {
-	font-size: 24rpx;
-	color: #999;
-}
-
-.habit-list {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 20rpx;
-}
-
-.habit-item {
-	width: calc(33.33% - 14rpx);
-}
-
-.habit-card {
+// 左滑容器
+.swipe-container {
 	position: relative;
-	border-radius: 24rpx;
-	padding: 30rpx 20rpx;
-	display: flex;
-	flex-direction: column;
-	align-items: center;
-	gap: 16rpx;
-	border: 3rpx solid #333;
-	box-shadow: 4rpx 4rpx 0 #333;
-	transition: transform 0.2s;
+	overflow: hidden;
+	border-radius: 16rpx;
 	
-	&:active {
-		transform: scale(0.95);
+	& + & {
+		margin-top: 2rpx;
 	}
 }
 
-.habit-icon-wrap {
-	width: 100rpx;
-	height: 100rpx;
+.swipe-actions {
+	position: absolute;
+	right: 0;
+	top: 0;
+	bottom: 0;
+	display: flex;
+	
+	.swipe-action {
+		width: 120rpx;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #fff;
+		font-size: 26rpx;
+		font-weight: bold;
+		
+		&.edit {
+			background: #7ec699;
+		}
+		
+		&.delete {
+			background: #ff6b6b;
+			border-radius: 0 16rpx 16rpx 0;
+		}
+	}
+}
+
+// 习惯行
+.habit-row {
+	position: relative;
+	z-index: 1;
+	display: flex;
+	align-items: center;
+	padding: 24rpx 20rpx;
+	background: #fff;
+	border-radius: 16rpx;
+	transition: transform 0.3s ease;
+	
+	&.swiped {
+		transform: translateX(-240rpx);
+	}
+}
+
+.habit-row-icon {
+	width: 72rpx;
+	height: 72rpx;
 	border-radius: 50%;
-	background: rgba(255, 255, 255, 0.3);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	position: relative;
-	border: 3rpx solid rgba(255, 255, 255, 0.5);
+	margin-right: 24rpx;
+	flex-shrink: 0;
+	border: 3rpx solid rgba(0, 0, 0, 0.08);
 }
 
-.habit-initial {
-	position: absolute;
-	font-size: 50rpx;
+.habit-row-info {
+	flex: 1;
+	min-width: 0;
+}
+
+.habit-row-name {
+	font-size: 30rpx;
+	color: #333;
 	font-weight: bold;
-	color: #fff;
-	opacity: 0.4;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
 }
 
-.habit-name {
-	font-size: 26rpx;
-	color: #fff;
-	text-align: center;
-	font-weight: bold;
-	text-shadow: 2rpx 2rpx 0 rgba(0, 0, 0, 0.1);
+.habit-row-meta {
+	display: flex;
+	align-items: center;
+	gap: 12rpx;
+	flex-shrink: 0;
+	margin-left: 16rpx;
 }
 
-.habit-type-tag {
+.habit-row-count {
+	font-size: 22rpx;
+	color: #999;
+}
+
+.habit-row-tag {
 	padding: 6rpx 16rpx;
 	border-radius: 20rpx;
 	font-size: 20rpx;
 	font-weight: bold;
-	border: 2rpx solid #fff;
 	
 	&.quick {
-		background: rgba(255, 255, 255, 0.4);
-		color: #fff;
+		background: rgba(126, 198, 153, 0.12);
+		color: #7ec699;
 	}
 	
 	&.timer {
-		background: #fff;
-		color: #333;
-	}
-}
-
-.delete-btn {
-	position: absolute;
-	top: 10rpx;
-	right: 10rpx;
-	width: 44rpx;
-	height: 44rpx;
-	border-radius: 50%;
-	background: rgba(255, 100, 100, 0.8);
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	border: 2rpx solid #fff;
-	
-	&:active {
-		transform: scale(0.9);
+		background: rgba(139, 124, 245, 0.12);
+		color: #8b7cf5;
 	}
 }
 
@@ -463,9 +509,12 @@ const saveHabit = () => {
 	border-radius: 32rpx;
 	overflow: hidden;
 	border: 4rpx solid #7ec699;
+	display: flex;
+	flex-direction: column;
 }
 
 .dialog-header {
+	flex-shrink: 0;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -485,9 +534,23 @@ const saveHabit = () => {
 }
 
 .dialog-content {
+	flex: 1;
 	padding: 30rpx;
-	max-height: 58vh;
 	overflow-y: auto;
+	overflow-x: hidden;
+	
+	// 自定义滚动条
+	&::-webkit-scrollbar {
+		width: 6rpx;
+	}
+	&::-webkit-scrollbar-track {
+		background: transparent;
+		border-radius: 3rpx;
+	}
+	&::-webkit-scrollbar-thumb {
+		background: #ddd;
+		border-radius: 3rpx;
+	}
 }
 
 .form-item {
@@ -504,11 +567,12 @@ const saveHabit = () => {
 
 .form-input {
 	width: 100%;
-	padding: 20rpx;
-	border: 3rpx solid #ddd;
+	padding: 28rpx 20rpx;
+	border: 3rpx solid #eee;
 	border-radius: 16rpx;
 	font-size: 28rpx;
 	background: #f9f9f9;
+	box-sizing: border-box;
 	
 	&:focus {
 		border-color: #7ec699;
@@ -544,16 +608,20 @@ const saveHabit = () => {
 	display: grid;
 	grid-template-columns: repeat(4, 1fr);
 	gap: 16rpx;
+	overflow: hidden;
 }
 
 .icon-item {
 	display: flex;
 	flex-direction: column;
 	align-items: center;
-	padding: 16rpx;
-	border: 3rpx solid #eee;
+	padding: 16rpx 8rpx;
+	border: 3rpx solid transparent;
 	border-radius: 16rpx;
 	gap: 8rpx;
+	min-width: 0;
+	background: #fafafa;
+	transition: all 0.2s;
 	
 	&.active {
 		border-color: #7ec699;
@@ -563,28 +631,47 @@ const saveHabit = () => {
 
 .icon-label {
 	font-size: 20rpx;
-	color: #666;
+	color: #999;
+}
+
+.color-preview {
+	height: 48rpx;
+	border-radius: 12rpx;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin-bottom: 20rpx;
+	transition: background-color 0.3s;
+}
+
+.color-preview-text {
+	font-size: 22rpx;
+	color: #fff;
+	font-weight: bold;
+	text-shadow: 0 1rpx 2rpx rgba(0, 0, 0, 0.2);
 }
 
 .color-grid {
 	display: grid;
-	grid-template-columns: repeat(6, 1fr);
-	gap: 16rpx;
+	grid-template-columns: repeat(5, 1fr);
+	gap: 20rpx;
+	justify-items: center;
 }
 
 .color-item {
-	width: 100%;
-	aspect-ratio: 1;
+	width: 68rpx;
+	height: 68rpx;
 	border-radius: 50%;
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	border: 4rpx solid #eee;
-	transition: transform 0.2s;
+	border: 4rpx solid transparent;
+	transition: transform 0.2s, border-color 0.2s;
 	
 	&.active {
 		border-color: #333;
-		transform: scale(1.1);
+		transform: scale(1.15);
+		box-shadow: 0 4rpx 12rpx rgba(0, 0, 0, 0.15);
 	}
 	
 	&:active {
@@ -599,14 +686,16 @@ const saveHabit = () => {
 }
 
 .category-item {
-	padding: 20rpx;
-	border: 3rpx solid #ddd;
+	padding: 22rpx;
+	border: 3rpx solid #eee;
 	border-radius: 16rpx;
 	display: flex;
 	align-items: center;
 	gap: 12rpx;
 	font-size: 26rpx;
 	color: #666;
+	background: #fafafa;
+	transition: all 0.2s;
 	
 	&.active {
 		border-color: #7ec699;
@@ -616,6 +705,7 @@ const saveHabit = () => {
 }
 
 .dialog-footer {
+	flex-shrink: 0;
 	display: flex;
 	padding: 20rpx 30rpx 30rpx;
 	gap: 20rpx;
