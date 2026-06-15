@@ -117,7 +117,9 @@ const toggleCheck = (catIndex, habitIndex, type, event) => {
 <style lang="scss" scoped>
 .container {
 	padding: 20rpx;
-	min-height: 100vh;
+	height: 100%;
+	overflow-y: auto;
+	box-sizing: border-box;
 }
 
 .header {

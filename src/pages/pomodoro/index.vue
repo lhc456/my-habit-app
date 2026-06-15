@@ -264,7 +264,7 @@
 					class="control-btn stop-big-btn"
 					@click="stopTimer(currentSession.id)"
 				>
-					<wd-icon name="stop" size="28" color="#fff"></wd-icon>
+					<wd-icon name="close" size="28" color="#fff"></wd-icon>
 					<text>{{ currentSession.status === 'completed' ? '重置' : '结束' }}</text>
 				</view>
 			</view>
@@ -410,11 +410,13 @@ const currentSession = computed<TimerSession | null>(() => {
 })
 
 const displayTime = computed(() => {
+	tick.value // force reactivity
 	if (!currentSession.value) return '00:00'
 	return timerStore.getDisplayTime(currentSession.value)
 })
 
 const displayProgress = computed(() => {
+	tick.value // force reactivity
 	if (!currentSession.value) return 0
 	return timerStore.getProgress(currentSession.value)
 })
@@ -782,10 +784,12 @@ function formatCompletedTime(timestamp: number | null): string {
 }
 
 function getDisplayTime(session: TimerSession): string {
+	tick.value // force reactivity
 	return timerStore.getDisplayTime(session)
 }
 
 function getProgress(session: TimerSession): number {
+	tick.value // force reactivity
 	return timerStore.getProgress(session)
 }
 
@@ -909,8 +913,10 @@ function handleCardClick(id: string) {
 
 <style lang="scss" scoped>
 .container {
-	padding: 20rpx;
-	min-height: 100vh;
+	padding: 20rpx 30rpx;
+	height: 100%;
+	overflow-y: auto;
+	box-sizing: border-box;
 	background: linear-gradient(180deg, #f5f9f7 0%, #fff 100%);
 }
 
@@ -989,6 +995,7 @@ function handleCardClick(id: string) {
 .swipe-inner {
 	display: flex;
 	align-items: stretch;
+	width: calc(100% + 260rpx);
 	transition: transform 0.25s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 	will-change: transform;
 }
@@ -1056,8 +1063,7 @@ function handleCardClick(id: string) {
 	box-shadow: 4rpx 4rpx 0 #e0e0e0;
 	transition: all 0.2s;
 	position: relative;
-	width: 100%;
-	min-width: 100%;
+	width: calc(100% - 314rpx);
 	flex-shrink: 0;
 
 	&:active {
@@ -1427,9 +1433,12 @@ function handleCardClick(id: string) {
 	border-radius: 32rpx;
 	overflow: hidden;
 	border: 4rpx solid #7ec699;
+	display: flex;
+	flex-direction: column;
 }
 
 .dialog-header {
+	flex-shrink: 0;
 	display: flex;
 	justify-content: space-between;
 	align-items: center;
@@ -1449,12 +1458,26 @@ function handleCardClick(id: string) {
 }
 
 .dialog-content {
+	flex: 1;
 	padding: 30rpx;
-	max-height: 60vh;
 	overflow-y: auto;
+	overflow-x: hidden;
+
+	&::-webkit-scrollbar {
+		width: 6rpx;
+	}
+	&::-webkit-scrollbar-track {
+		background: transparent;
+		border-radius: 3rpx;
+	}
+	&::-webkit-scrollbar-thumb {
+		background: #ddd;
+		border-radius: 3rpx;
+	}
 }
 
 .dialog-footer {
+	flex-shrink: 0;
 	display: flex;
 	padding: 20rpx 30rpx 30rpx;
 	gap: 20rpx;

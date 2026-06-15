@@ -341,7 +341,9 @@ const onSwipeDelete = (catIdx, idx) => {
 <style lang="scss" scoped>
 .container {
 	padding: 20rpx;
-	min-height: 100vh;
+	height: 100%;
+	overflow-y: auto;
+	box-sizing: border-box;
 	background: linear-gradient(180deg, #f5f9f7 0%, #fff 100%);
 }
 

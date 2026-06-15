@@ -72,8 +72,8 @@ export const useTimerStore = defineStore('timer', () => {
 	 */
 	function getElapsedSeconds(session: TimerSession): number {
 		if (session.status === 'running') {
-			// Total time since first start minus all paused time
-			const elapsedMs = (Date.now() - session.startedAt!) - session.totalPausedMs
+			// totalPausedMs stores accumulated elapsed time, add time since last resume
+			const elapsedMs = session.totalPausedMs + (Date.now() - session.lastResumeAt!)
 			return Math.max(0, Math.floor(elapsedMs / 1000))
 		} else if (session.status === 'paused') {
 			// At pause, totalPausedMs was updated to reflect all elapsed time

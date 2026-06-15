@@ -16,6 +16,33 @@ export default {
 /* 全局样式 - 马卡龙色系主题 */
 // @import 'wot-design-uni/style.css';
 
+html, body {
+  overflow: hidden;
+}
+
+html, body, page, uni-page-body {
+  overflow-x: hidden;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+uni-page-body {
+  height: 100%;
+  overflow-y: auto;
+}
+
+/* 自定义滚动条 */
+::-webkit-scrollbar {
+  width: 6rpx;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 3rpx;
+}
+
 page {
   background-color: #f5f5f5;
   font-size: 28rpx;

@@ -3,7 +3,7 @@
 		<!-- User Info -->
 		<view class="user-info">
 			<view class="avatar">
-				<wd-icon name="user" size="60" color="#fff"></wd-icon>
+				<wd-icon name="user" size="32" color="#fff"></wd-icon>
 			</view>
 			<view class="user-detail">
 				<text class="nickname">未登录</text>
@@ -14,7 +14,7 @@
 		<!-- Timer Statistics -->
 		<view v-if="hasData" class="stats-section">
 			<view class="stats-header">
-				<wd-icon name="chart-bar" size="28" color="#7ec699"></wd-icon>
+				<wd-icon name="chart-bar" size="22" color="#7ec699"></wd-icon>
 				<text class="stats-title">今日专注统计</text>
 				<text class="stats-date">{{ todayDate }}</text>
 			</view>
@@ -23,21 +23,21 @@
 			<view class="stats-cards">
 				<view class="stat-card">
 					<view class="stat-icon-wrap focus-icon">
-						<wd-icon name="clock" size="28" color="#fff"></wd-icon>
+						<wd-icon name="clock" size="22" color="#fff"></wd-icon>
 					</view>
 					<text class="stat-value">{{ formatMinutes(historyStore.todayFocusSeconds) }}</text>
 					<text class="stat-label">专注时长</text>
 				</view>
 				<view class="stat-card">
 					<view class="stat-icon-wrap check-icon">
-						<wd-icon name="check" size="28" color="#fff"></wd-icon>
+						<wd-icon name="check" size="22" color="#fff"></wd-icon>
 					</view>
 					<text class="stat-value">{{ historyStore.todayCompletedCount }}</text>
 					<text class="stat-label">今日完成</text>
 				</view>
 				<view class="stat-card">
 					<view class="stat-icon-wrap pomodoro-icon">
-						<wd-icon name="time" size="28" color="#fff"></wd-icon>
+						<wd-icon name="time" size="22" color="#fff"></wd-icon>
 					</view>
 					<text class="stat-value">{{ historyStore.todayPomodoroCount }}</text>
 					<text class="stat-label">番茄完成</text>
@@ -46,7 +46,7 @@
 
 			<!-- Streak Badge -->
 			<view class="streak-badge">
-				<wd-icon name="star" size="28" color="#ff6b35"></wd-icon>
+				<wd-icon name="star" size="22" color="#ff6b35"></wd-icon>
 				<text class="streak-text">连续打卡 <text class="streak-num">{{ historyStore.streakDays }}</text> 天</text>
 			</view>
 
@@ -103,7 +103,7 @@
 
 		<!-- No data state -->
 		<view v-else class="no-data-section">
-			<wd-icon name="clock" size="80" color="#ddd"></wd-icon>
+			<wd-icon name="clock" size="60" color="#ddd"></wd-icon>
 			<text class="no-data-text">还没有计时记录</text>
 			<text class="no-data-desc">去番茄钟完成一个计时吧</text>
 		</view>
@@ -111,19 +111,19 @@
 		<!-- Menu List -->
 		<view class="menu-list">
 			<view class="menu-item">
-				<wd-icon name="star" size="40" color="#ffd6a5"></wd-icon>
+				<wd-icon name="star" size="26" color="#ffd6a5"></wd-icon>
 				<text class="menu-text">成就徽章</text>
-				<wd-icon name="arrow-right" size="32" color="#ccc"></wd-icon>
+				<wd-icon name="arrow-right" size="20" color="#ccc"></wd-icon>
 			</view>
 			<view class="menu-item">
-				<wd-icon name="clock" size="40" color="#a8d8d8"></wd-icon>
+				<wd-icon name="clock" size="26" color="#a8d8d8"></wd-icon>
 				<text class="menu-text">提醒设置</text>
-				<wd-icon name="arrow-right" size="32" color="#ccc"></wd-icon>
+				<wd-icon name="arrow-right" size="20" color="#ccc"></wd-icon>
 			</view>
 			<view class="menu-item">
-				<wd-icon name="setting" size="40" color="#c4b5fd"></wd-icon>
+				<wd-icon name="setting" size="26" color="#c4b5fd"></wd-icon>
 				<text class="menu-text">设置</text>
-				<wd-icon name="arrow-right" size="32" color="#ccc"></wd-icon>
+				<wd-icon name="arrow-right" size="20" color="#ccc"></wd-icon>
 			</view>
 		</view>
 	</view>
@@ -231,7 +231,10 @@ function getBarHeight(focusSeconds: number): string {
 <style lang="scss" scoped>
 .container {
 	padding: 20rpx;
-	min-height: 100vh;
+	height: 100%;
+	overflow-x: hidden;
+	overflow-y: auto;
+	box-sizing: border-box;
 	background: linear-gradient(180deg, #f5f9f7 0%, #fff 100%);
 }
 
